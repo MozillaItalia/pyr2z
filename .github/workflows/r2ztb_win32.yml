@@ -1,6 +1,8 @@
 name: r2z Thunderbird Win32
 
 on:
+  schedule:
+  - cron: '30 19 * * *'
   workflow_dispatch:
 
 jobs:

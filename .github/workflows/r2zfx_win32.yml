@@ -1,6 +1,8 @@
 name: r2z Firefox Win32
 
 on:
+  schedule:
+  - cron: '00 19 * * *'
   workflow_dispatch:
 
 jobs:
