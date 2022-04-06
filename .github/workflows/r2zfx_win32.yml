@@ -46,7 +46,7 @@ jobs:
         if: env.DIFF != 'None'
         uses: edgarrc/action-7z@v1
         with:
-          args: 7z a -t7z -mx=9 fx-win32/${{ env.FXZIPFILE }}.7z ./core32/*
+          args: 7z a -t7z -mx=9 fx-win32/${{ env.FXZIPFILE }} ./core32/*
 
       - name: r2z-Post
         if: env.DIFF != 'None'
