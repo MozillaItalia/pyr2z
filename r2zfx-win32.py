@@ -41,7 +41,7 @@ def makewebpage(folder,zipfilename):
 
 fxversion = mzlaJson("https://product-details.mozilla.org/1.0/firefox_versions.json",channel)
 folder = "fx-win32"
-zipfilename = "firefox-"+fxversion+"-it.win32.zip"
+zipfilename = "firefox-"+fxversion+"-it.win32.7z"
 file_exist = os.path.join(folder,zipfilename)
 
 if (os.path.exists(file_exist)):

@@ -28,9 +28,20 @@ def mzlaDownload(url,filename):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
+def makewebpage(folder,zipfilename):
+    pre = mid = post = ""
+    with open(os.path.join("include","body-pre")) as fp:
+        pre = fp.read()
+    with open(os.path.join("include","body-mid")) as fp:
+        mid = fp.read()
+    with open(os.path.join("include","body-post")) as fp:
+        post = fp.read()
+    response = pre + folder + "/" + zipfilename + mid + folder + "/" + zipfilename + post
+    return response
+
 tbversion = mzlaJson("https://product-details.mozilla.org/1.0/thunderbird_versions.json",channel)
 folder = "tb-win32"
-zipfilename = "thunderbird-"+tbversion+"-it.win32.zip"
+zipfilename = "thunderbird-"+tbversion+"-it.win32.7z"
 file_exist = os.path.join(folder,zipfilename)
 
 if (os.path.exists(file_exist)):
@@ -43,6 +54,9 @@ else:
     pkgname = "Thunderbird Setup %s.exe" % tbversion
     download = mzlaDownload(pkgpath,pkgname)
     print(channel,download)
+    html = makewebpage(folder,zipfilename)
+    with open ("tb32.html", 'w') as fp:
+        fp.write(html)
 
     # https://errorsfixing.com/how-to-set-environment-variables-in-github-actions-using-python/
     # https://stackoverflow.com/a/70123641
