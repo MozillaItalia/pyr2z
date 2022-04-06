@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html>
-<body>
-
-<p>Il download richiesto partirà entro breve. In caso contrario, <a data-auto-download href="tb-win32/thunderbird-91.8.0-it.win32.zip.7z">fai clic qui</a> per farlo partire manualmente.</p>
-
-<script>
-  $(function() {
-    $('a[data-auto-download]').each(function(){
-      var $this = $(this);
-      setTimeout(function() {
-        window.location = $this.attr('href');
-      }, 2000);
+<head>
+  <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script>
+    $(function() {
+      $('a[data-auto-download]').each(function(){
+        var $this = $(this);
+        setTimeout(function() {
+          window.location = $this.attr('href');
+        }, 2000);
+      });
     });
-  });
-</script>
+  </script>
 
+</head>
+<body>
+  <div class="wrapper">
+    <p>Il download richiesto partirà entro breve. In caso contrario, <a data-auto-download href="tb-win32/thunderbird-91.8.0-it.win32.zip.7z">fai clic qui</a> per farlo partire manualmente.</p>
+  </div>
 </body>
 </html>
