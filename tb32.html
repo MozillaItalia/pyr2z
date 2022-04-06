@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Il download richiesto partirà entro breve. In caso contrario, <a data-auto-download href="tb-win32/thunderbird-91.8.0-it.win32.zip.7z">fai clic qui</a> per farlo partire manualmente.</p>
+
+<script type="text/javascript">
+  $(function() {
+    $('a[data-auto-download]').each(function(){
+      var $this = $(this);
+      setTimeout(function() {
+        window.location = $this.attr('href');
+      }, 2000);
+    });
+  });
+</script>
+
+</body>
+</html>
