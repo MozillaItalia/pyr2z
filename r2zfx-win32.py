@@ -55,7 +55,7 @@ else:
     download = mzlaDownload(pkgpath,pkgname)
     print(channel,download)
     html = makewebpage(folder,zipfilename)
-    with open ("fx32.html"), 'w') as fp:
+    with open ("fx32.html", 'w') as fp:
         fp.write(html)
 
     # https://errorsfixing.com/how-to-set-environment-variables-in-github-actions-using-python/
