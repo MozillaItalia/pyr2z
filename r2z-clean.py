@@ -5,11 +5,15 @@ import shutil
 
 def r2zTempClean():
     shutil.rmtree('./FxTemp32', ignore_errors=True)
+    shutil.rmtree('./FxTempEsr32', ignore_errors=True)
     shutil.rmtree('./FxTemp64', ignore_errors=True)
+    shutil.rmtree('./FxTempEsr64', ignore_errors=True)
     shutil.rmtree('./TbTemp32', ignore_errors=True)
     shutil.rmtree('./TbTemp64', ignore_errors=True)
     shutil.rmtree('./core32', ignore_errors=True)
+    shutil.rmtree('./esr_core32', ignore_errors=True)
     shutil.rmtree('./core64', ignore_errors=True)
+    shutil.rmtree('./esr_core64', ignore_errors=True)
     os.remove(os.environ.get("PKGNAME"))
     return
 
