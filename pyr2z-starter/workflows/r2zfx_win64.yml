@@ -1,8 +1,8 @@
-name: r2z Thunderbird Win32
+name: r2z Firefox Win64
 
 on:
   schedule:
-  - cron: '30 19 * * *'
+  - cron: '00 19 * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,62 +10,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Setup Python Environment
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: 3.9
 
       - name: Install Requirements
         run: pip install -r r2z-mzla-requirements.txt
 
       - name: r2z-Pre
-        run: python r2ztb-win32.py
+        run: python r2zfx-win64.py
 
       - name: Check Vars
         if: env.DIFF != 'None'
         run: |
              echo ${{ env.CHANNEL }}
              echo ${{ env.PKGNAME }}
-             echo ${{ env.TBVERSION }}
-             echo ${{ env.TBZIPFILE }}
+             echo ${{ env.FXVERSION }}
+             echo ${{ env.FXZIPFILE }}
 
-      - name: Unzip Executable
+      - name: FxUnzip
         if: env.DIFF != 'None'
         uses: DuckSoft/extract-7z-action@v1.0
         with:
           pathSource: ${{ env.PKGNAME }}
-          pathTarget: "TbTemp32"
+          pathTarget: "FxTemp64"
 
       - name: Move Core Directory
         if: env.DIFF != 'None'
-        run: mv './TbTemp32/core' './core32'
+        run: mv './FxTemp64/core' './core64'
 
-      - name: Make Portable
+      - name: FxZip
         if: env.DIFF != 'None'
         uses: edgarrc/action-7z@v1
         with:
-          args: 7z a -t7z -mx=9 ${{ env.TBZIPFILE }} ./core32/*
+          args: 7z a -t7z -mx=9 fx-win64/${{ env.FXZIPFILE }} ./core64/*
 
-      - name: Release
+      - name: r2z-Post
         if: env.DIFF != 'None'
-        uses: xresloader/upload-to-github-release@v1.3.11
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          file: "${{ env.TBZIPFILE }}"
-          draft: false
-          tag_name: 'tb-win32'
+        run: python r2z-clean.py
 
-      - name: Commit update file
-        if: env.DIFF != 'None'      
+      - name: Commit changes
+        if: env.DIFF != 'None'
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Thunderbird Win32 ${{ env.TBVERSION }}
+          commit_message: Fx-Win64-${{ env.FXVERSION }}
           push_options: '--force'
-          skip_dirty_check: false
+          skip_dirty_check: true
           skip_fetch: true
           skip_checkout: true
           disable_globbing: true
-          file_pattern: updates/r2ztb

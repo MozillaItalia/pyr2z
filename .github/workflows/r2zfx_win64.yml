@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python Environment
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: "3.10"
 
       - name: Install Requirements
         run: pip install -r r2z-mzla-requirements.txt
@@ -31,7 +31,7 @@ jobs:
              echo ${{ env.FXVERSION }}
              echo ${{ env.FXZIPFILE }}
 
-      - name: FxUnzip
+      - name: Unzip Executable
         if: env.DIFF != 'None'
         uses: DuckSoft/extract-7z-action@v1.0
         with:
@@ -42,23 +42,30 @@ jobs:
         if: env.DIFF != 'None'
         run: mv './FxTemp64/core' './core64'
 
-      - name: FxZip
+      - name: Make Portable
         if: env.DIFF != 'None'
         uses: edgarrc/action-7z@v1
         with:
-          args: 7z a -t7z -mx=9 fx-win64/${{ env.FXZIPFILE }} ./core64/*
+          args: 7z a -t7z -mx=9 ${{ env.FXZIPFILE }} ./core64/*
 
-      - name: r2z-Post
+      - name: Release
         if: env.DIFF != 'None'
-        run: python r2z-clean.py
+        uses: xresloader/upload-to-github-release@v1.3.11
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "${{ env.FXZIPFILE }}"
+          draft: false
+          tag_name: 'fx-win64'
 
-      - name: Commit changes
-        if: env.DIFF != 'None'
+      - name: Commit update file
+        if: env.DIFF != 'None'      
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Fx-Win64-${{ env.FXVERSION }}
+          commit_message: Firefox Win64 ${{ env.FXVERSION }}
           push_options: '--force'
-          skip_dirty_check: true
+          skip_dirty_check: false
           skip_fetch: true
           skip_checkout: true
           disable_globbing: true
+          file_pattern: updates/r2zfx-64
