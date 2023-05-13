@@ -1,0 +1,71 @@
+name: r2z Firefox ESR Win64
+
+on:
+  schedule:
+  - cron: '15 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Requirements
+        run: pip install -r r2z-mzla-requirements.txt
+
+      - name: r2z-Pre
+        run: python r2zfx-esr-win64.py
+
+      - name: Check Vars
+        if: env.DIFF != 'None'
+        run: |
+             echo ${{ env.CHANNEL }}
+             echo ${{ env.PKGNAME }}
+             echo ${{ env.FXVERSION }}
+             echo ${{ env.FXZIPFILE }}
+
+      - name: Unzip Executable
+        if: env.DIFF != 'None'
+        uses: DuckSoft/extract-7z-action@v1.0
+        with:
+          pathSource: ${{ env.PKGNAME }}
+          pathTarget: "FxTempEsr64"
+
+      - name: Move Core Directory
+        if: env.DIFF != 'None'
+        run: mv './FxTempEsr64/core' './esr_core64'
+
+      - name: Make Portable
+        if: env.DIFF != 'None'
+        uses: edgarrc/action-7z@v1
+        with:
+          args: 7z a -t7z -mx=9 ${{ env.FXZIPFILE }} ./esr_core64/*
+
+      - name: Release
+        if: env.DIFF != 'None'
+        uses: xresloader/upload-to-github-release@v1.3.11
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "${{ env.FXZIPFILE }}"
+          draft: false
+          tag_name: 'fx-esr-win64'
+
+      - name: Commit update file
+        if: env.DIFF != 'None'      
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Firefox ESR Win64 ${{ env.FXVERSION }}
+          push_options: '--force'
+          skip_dirty_check: false
+          skip_fetch: true
+          skip_checkout: true
+          disable_globbing: true
+          file_pattern: updates/r2zfx-esr-64

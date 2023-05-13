@@ -1,0 +1,64 @@
+name: r2z Thunderbird Win32
+
+on:
+  schedule:
+  - cron: '30 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Python Environment
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Requirements
+        run: pip install -r r2z-mzla-requirements.txt
+
+      - name: r2z-Pre
+        run: python r2ztb-win32.py
+
+      - name: Check Vars
+        if: env.DIFF != 'None'
+        run: |
+             echo ${{ env.CHANNEL }}
+             echo ${{ env.PKGNAME }}
+             echo ${{ env.TBVERSION }}
+             echo ${{ env.TBZIPFILE }}
+
+      - name: TbUnzip
+        if: env.DIFF != 'None'
+        uses: DuckSoft/extract-7z-action@v1.0
+        with:
+          pathSource: ${{ env.PKGNAME }}
+          pathTarget: "TbTemp32"
+
+      - name: Move Core Directory
+        if: env.DIFF != 'None'
+        run: mv './TbTemp32/core' './core32'
+
+      - name: TbZip
+        if: env.DIFF != 'None'
+        uses: edgarrc/action-7z@v1
+        with:
+          args: 7z a -t7z -mx=9 tb-win32/${{ env.TBZIPFILE }} ./core32/*
+
+      - name: r2z-Post
+        if: env.DIFF != 'None'
+        run: python r2z-clean.py
+
+      - name: Commit changes
+        if: env.DIFF != 'None'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Tb-Win32-${{ env.TBVERSION }}
+          push_options: '--force'
+          skip_dirty_check: true
+          skip_fetch: true
+          skip_checkout: true
+          disable_globbing: true
