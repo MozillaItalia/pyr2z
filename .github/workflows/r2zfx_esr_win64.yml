@@ -1,5 +1,8 @@
 name: r2z Firefox ESR Win64
 
+permissions:
+  contents: write
+
 on:
   schedule:
   - cron: '15 19 * * *'
