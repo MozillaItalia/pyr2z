@@ -1,4 +1,6 @@
 name: r2z Firefox Win64
+permissions:
+  contents: write
 
 on:
   schedule:
