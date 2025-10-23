@@ -1,4 +1,6 @@
 name: r2z Thunderbird Win32
+permissions:
+  contents: write
 
 on:
   schedule:
